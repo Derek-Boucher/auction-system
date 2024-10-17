@@ -8,7 +8,7 @@ import socketSetup from './sockets/socket.js';
 
 // Import Routes
 import authRoutes from './routes/authRoutes.js'
-
+import auctionRoutes from './routes/AuctionRoute.js'
 
 const app = express();
 app.use(express.json());
@@ -25,6 +25,7 @@ app.use(logger);
 
 // Use routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auctions', auctionRoutes);
 
 // Socket.io configuration
 const io = new Server(server, {

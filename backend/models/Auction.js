@@ -11,6 +11,7 @@ const auctionSchema = new mongoose.Schema({
   startingBid: { type: Number, required: true },
   currentBid: { type: Number, default: 0 },
   endTime: { type: Date, required: true },
+  imageUrl: { type: String, required: false },
   description: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   bids: [bidSchema],
