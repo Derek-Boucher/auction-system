@@ -1,0 +1,42 @@
+.auction-list {
+    display: flex;                /* Utilise Flexbox pour le conteneur */
+    flex-wrap: wrap;             /* Permet aux cartes de passer à la ligne suivante */
+    justify-content: space-around; /* Espacement uniforme entre les cartes */
+    margin: 0 -15px;             /* Ajuste les marges pour éviter l'espace latéral indésirable */
+}
+
+.auction-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+    flex: 1 1 30%;                /* Permet aux cartes de prendre 30% de la largeur, adaptable */
+    margin: 20px;                /* Ajoute une marge entre les cartes */
+    max-width: 325px;    
+    color: black;
+}
+
+.auction-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auction-image {
+    width: 100%;                 /* Utilise 100% de la largeur de la carte */
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.auction-details {
+    margin-top: 10px;
+}
+
+.auction-details h3 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.auction-details p {
+    margin: 5px 0;
+}

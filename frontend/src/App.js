@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
+import HomePage from './pages/HomePage';
 
 const App = () => {
   useEffect(() => {
@@ -27,8 +28,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Auction System</h1>
-      {/* Your application code here */}
+      <HomePage />
     </div>
   );
 };
