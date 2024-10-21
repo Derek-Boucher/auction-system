@@ -1,24 +1,24 @@
 import Auction from '../models/Auction.js';
 
-// Controller to get all auctions with optional search and sorting
+// Controller to get all auctions with optional search, sorting, and pagination
 export const getAuctions = async (req, res) => {
-  const { search, sortBy } = req.query;
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 if not specified
+  const page = parseInt(req.query.page) || 1; // Default to 1 if not specified
 
   try {
-    let query = {};
+    const auctions = await Auction.find()
+      .skip((page - 1) * limit) // Skip previous auctions
+      .limit(limit); // Limit the number of auctions returned
 
-    if (search) {
-      query.title = { $regex: search, $options: 'i' }; // Case-insensitive search
-    }
+    const totalCount = await Auction.countDocuments(); // Total auctions
+    const totalPages = Math.ceil(totalCount / limit); // Calculate total pages
 
-    // Retrieve auctions from the database
-    const auctions = await Auction.find(query).sort(sortBy ? { [sortBy]: 1 } : {});
-    res.status(200).json(auctions); 
+    res.json({ auctions, totalPages }); // Return auctions and total pages
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // Controller to create a new auction
 export const createAuction = async (req, res) => {
