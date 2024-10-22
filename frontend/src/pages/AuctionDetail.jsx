@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react"; // Add useCallback
 import { Link, useParams } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
@@ -12,7 +12,7 @@ const AuctionDetail = () => {
   const [loading, setLoading] = useState(false);
 
   // Function to fetch auction details from the API
-  const fetchAuctionDetails = async () => {
+  const fetchAuctionDetails = useCallback(async () => {
     try {
       setLoading(true); // Start loading state
       const response = await fetch(`http://localhost:5000/api/auctions/${id}`);
@@ -28,11 +28,11 @@ const AuctionDetail = () => {
       setError("Failed to fetch auction details"); // Handle fetch errors
       setLoading(false);
     }
-  };
+  }, [id]); // Include id as a dependency
 
   useEffect(() => {
     fetchAuctionDetails();
-  }, [id]);
+  }, [fetchAuctionDetails]); // Include fetchAuctionDetails in the dependency array
 
   // Function to handle bid submission
   const handleBidSubmit = async (e) => {
@@ -67,7 +67,7 @@ const AuctionDetail = () => {
         setSuccess("Bid placed successfully");
         setError(null);
         setBidAmount("");
-        fetchAuctionDetails();
+        fetchAuctionDetails(); // Fetch updated auction details after placing a bid
       } else {
         setError(data.message || "Failed to place bid");
         setSuccess(null);
