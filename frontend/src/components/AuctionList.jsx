@@ -1,57 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import AuctionCard from './AuctionCard'; // Assurez-vous que le chemin d'importation est correct
-import Pagination from './Pagination'; // Assurez-vous que le chemin est correct
+import React, { useEffect, useState } from "react";
+import AuctionCard from "./AuctionCard";
+import Pagination from "./Pagination";
 
-// Composant pour afficher la liste des enchères
+// Component to display the list of auctions
 const AuctionList = () => {
-  const [auctions, setAuctions] = useState([]); // État pour stocker toutes les enchères
-  const [loading, setLoading] = useState(false); // État pour gérer le chargement
-  const [error, setError] = useState(null); // État pour gérer les erreurs
+  const [auctions, setAuctions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // État pour le nombre d'éléments par page
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Récupérer toutes les enchères
+  // Fetch auctions from the API
   const fetchAuctions = async () => {
     try {
-      setLoading(true); // Start loading
+      setLoading(true); // Start loading state
       const response = await fetch(`http://localhost:5000/api/auctions`);
       const data = await response.json();
-      console.log('API Response:', data); // Pour vérifier la structure de la réponse
-      
-      // Vérifiez que data est un tableau
-      if (Array.isArray(data)) {
-        setAuctions(data); // Stocker toutes les enchères
-      } else {
-        setAuctions([]); // Effacer les enchères si ce n'est pas un tableau
-      }
-      
-      setLoading(false); // End loading
-    } catch (error) {
-      setError('Failed to load auctions'); // Gérer les erreurs
-      setLoading(false); // End loading even on error
-    }
-  };  
+      console.log("API Response:", data);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page); // Met à jour la page actuelle
+      // Check if the response contains the "auctions" array
+      if (data && Array.isArray(data.auctions)) {
+        setAuctions(data.auctions);
+      } else {
+        setAuctions([]);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to load auctions");
+      setLoading(false);
+    }
   };
 
-  // Charger toutes les enchères au démarrage
+  // Handle page change event
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Load auctions when the component mounts
   useEffect(() => {
-    fetchAuctions(); // Appeler la fonction pour récupérer toutes les enchères
-  }, []); // Dépendance vide pour ne charger qu'une seule fois
+    fetchAuctions();
+  }, []); // Empty dependency array to fetch only once on mount
 
-  // Calculer les enchères à afficher pour la page actuelle
-  const indexOfLastAuction = currentPage * itemsPerPage; // Index du dernier élément
-  const indexOfFirstAuction = indexOfLastAuction - itemsPerPage; // Index du premier élément
-  const currentAuctions = auctions.slice(indexOfFirstAuction, indexOfLastAuction); // Enchères pour la page actuelle
+  // Calculate the indices for slicing the auctions array
+  const indexOfLastAuction = currentPage * itemsPerPage;
+  const indexOfFirstAuction = indexOfLastAuction - itemsPerPage;
+  const currentAuctions = auctions.slice(
+    indexOfFirstAuction,
+    indexOfLastAuction
+  );
 
-  // Affichage de l'état de chargement ou des erreurs
+  // Display loading state or error message if applicable
   if (loading) return <div style={styles.loading}>Loading...</div>;
   if (error) return <div style={styles.error}>{error}</div>;
 
-  // Calculer le total de pages
-  const totalPages = Math.ceil(auctions.length / itemsPerPage); // Total de pages basé sur le nombre total d'enchères
+  // Calculate total pages for pagination
+  const totalPages = Math.ceil(auctions.length / itemsPerPage);
 
   return (
     <div style={styles.container}>
@@ -62,8 +66,8 @@ const AuctionList = () => {
           id="items-per-page"
           value={itemsPerPage}
           onChange={(e) => {
-            setItemsPerPage(Number(e.target.value)); // Met à jour le nombre d'éléments par page
-            setCurrentPage(1); // Réinitialiser à la première page sur changement
+            setItemsPerPage(Number(e.target.value)); // Update items per page
+            setCurrentPage(1); // Reset to the first page on change
           }}
           style={styles.select}
         >
@@ -73,62 +77,62 @@ const AuctionList = () => {
           <option value={50}>50</option>
         </select>
       </div>
-      
+
       {currentAuctions.length === 0 ? (
-        <div style={styles.noAuctions}>No auctions found</div> // Message si aucune enchère trouvée
+        <div style={styles.noAuctions}>No auctions found</div> // Message if no auctions found
       ) : (
-        <div className="auction-list"> {/* Utilise la classe CSS existante pour le style */} 
+        <div className="auction-list">
           {currentAuctions.map((auction) => (
-            <AuctionCard key={auction._id} auction={auction} /> // Utiliser le composant AuctionCard
+            <AuctionCard key={auction._id} auction={auction} /> // Render AuctionCard for each auction
           ))}
         </div>
       )}
-  
-      <Pagination 
-        currentPage={currentPage} 
-        totalPages={totalPages} 
-        onPageChange={handlePageChange} 
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange} // Pass page change handler to Pagination component
       />
     </div>
   );
 };
 
-// Styles pour le composant AuctionList
+// Styles for the AuctionList component
 const styles = {
   container: {
-    backgroundColor: '#2c3e50', // Fond sombre
-    color: '#ecf0f1', // Couleur du texte claire
-    padding: '20px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)', // Ombre pour un effet moderne
+    backgroundColor: "#2c3e50",
+    color: "#ecf0f1",
+    padding: "20px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
   },
   title: {
-    textAlign: 'center',
-    marginBottom: '20px',
+    textAlign: "center",
+    marginBottom: "20px",
   },
   itemsPerPage: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '20px',
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: "20px",
   },
   select: {
-    marginLeft: '10px',
-    padding: '10px',
-    borderRadius: '5px',
-    border: 'none',
-    backgroundColor: '#34495e', // Fond sombre pour le sélecteur
-    color: '#ecf0f1', // Texte clair pour le sélecteur
+    marginLeft: "10px",
+    padding: "10px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#34495e",
+    color: "#ecf0f1",
   },
   loading: {
-    textAlign: 'center',
-    color: '#3498db', // Couleur pour l'état de chargement
+    textAlign: "center",
+    color: "#3498db",
   },
   error: {
-    textAlign: 'center',
-    color: 'red', // Couleur pour l'erreur
+    textAlign: "center",
+    color: "red",
   },
   noAuctions: {
-    textAlign: 'center',
-    color: '#ecf0f1', // Couleur pour le message "aucune enchère"
+    textAlign: "center",
+    color: "#ecf0f1",
   },
 };
 

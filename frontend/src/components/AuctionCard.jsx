@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/AuctionCard.css';
 
 const AuctionCard = ({ auction }) => {
@@ -7,8 +8,9 @@ const AuctionCard = ({ auction }) => {
       <img src={auction.imageUrl} alt={auction.title} className="auction-image" />
       <div className="auction-details">
         <h3>{auction.title}</h3>
-        <p>Starting Bid: ${auction.startingBid}</p>
-        <p>{auction.description}</p>
+        <p>Current Bid: ${auction.currentBid}</p>
+        <p>End Time: {new Date(auction.endTime).toLocaleString()}</p>
+        <Link to={`/auction/${auction._id}`}>View Details</Link> {/* Navigate to AuctionDetail */}
       </div>
     </div>
   );
