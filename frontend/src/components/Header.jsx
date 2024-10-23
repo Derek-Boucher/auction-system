@@ -16,8 +16,8 @@ const Header = () => {
             {/* Apply link styles */}
           </li>
           <li>
-            <a href="/auctions" style={styles.link}>
-              Auctions
+            <a href="/myAuctions" style={styles.link}>
+              My Auctions
             </a>{" "}
             {/* Apply link styles */}
           </li>
