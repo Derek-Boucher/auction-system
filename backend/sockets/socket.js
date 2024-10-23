@@ -1,30 +1,25 @@
-export default function socketSetup(io) {
-    // Connection event
-    io.on('connection', (socket) => {
-        console.log('A user connected'); // Log when a user connects
+// Function to set up WebSocket connections
+const socketSetup = (io) => {
+  io.on("connection", (socket) => {
+    console.log("New client connected"); // Log when a new client connects
 
-        // Listen for a custom event from the client to join an auction
-        socket.on('joinAuction', (auctionId) => {
-            // Join a specific room for the auction
-            socket.join(auctionId);
-            console.log(`User joined auction: ${auctionId}`); // Log which auction the user joined
-            
-            // Emit an event to all clients in the room
-            io.to(auctionId).emit('message', `A new user has joined the auction: ${auctionId}`);
-        });
-
-        // Listen for an event for placing bids
-        socket.on('placeBid', (bidData) => {
-            // Logic to process the bid
-            console.log(`Bid placed:`, bidData);
-            
-            // Emit the event to all clients in the auction room
-            io.to(bidData.auctionId).emit('newBid', bidData);
-        });
-
-        // Disconnection event
-        socket.on('disconnect', () => {
-            console.log('User disconnected'); // Log when a user disconnects
-        });
+    // Handle client disconnection
+    socket.on("disconnect", () => {
+      console.log("Client disconnected"); // Log when a client disconnects
     });
-}
+
+    // Listen for bid placement events
+    socket.on("placeBid", (auctionId, bidAmount) => {
+      // Create an object to represent the updated auction details
+      const updatedAuction = {
+        _id: auctionId,
+        currentBid: bidAmount,
+      };
+
+      // Emit the updated auction details to all connected clients
+      io.emit("bidUpdate", updatedAuction);
+    });
+  });
+};
+
+export default socketSetup;
