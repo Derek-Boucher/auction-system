@@ -58,6 +58,7 @@ const styles = {
   logo: {
     fontSize: "1.5rem",
     fontWeight: "bold",
+    color: "#f96d00",
   },
   nav: {
     listStyle: "none",
