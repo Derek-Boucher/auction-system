@@ -7,11 +7,11 @@ export const getAuctions = async (req, res) => {
 
   try {
     const auctions = await Auction.find()
-      .skip((page - 1) * limit) // Skip previous auctions
-      .limit(limit); // Limit the number of auctions returned
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-    const totalCount = await Auction.countDocuments(); // Total auctions
-    const totalPages = Math.ceil(totalCount / limit); // Calculate total pages
+    const totalCount = await Auction.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
 
     res.json({ auctions, totalPages }); // Return auctions and total pages
   } catch (error) {
@@ -33,7 +33,7 @@ export const createAuction = async (req, res) => {
       imageUrl,
       description,
       createdBy,
-      bids: [], // Initialiser les enchères
+      bids: [],
     });
 
     await newAuction.save(); // Save the new auction to the database
@@ -49,16 +49,16 @@ export const createAuction = async (req, res) => {
 
 // Controller to get a single auction by ID
 export const getAuctionById = async (req, res) => {
-  const { id } = req.params; // Récupère l'ID de l'URL
+  const { id } = req.params;
 
   try {
-    const auction = await Auction.findById(id); // Trouve l'enchère par ID
+    const auction = await Auction.findById(id);
 
     if (!auction) {
       return res.status(404).json({ message: "Auction not found" });
     }
 
-    res.json(auction); // Retourne les détails de l'enchère
+    res.json(auction);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -66,41 +66,45 @@ export const getAuctionById = async (req, res) => {
 };
 
 // Controller to place a bid on an auction
-export const bidOnAuction = async (req, res) => {
-  const { id } = req.params; // Récupère l'id de l'enchère à partir des paramètres de la requête
-  const { bidAmount } = req.body; // Montant de l'enchère envoyé dans le corps de la requête
+export const bidOnAuction = async (req, res, io) => {
+  const { id } = req.params; // Retrieve the auction ID from the request parameters
+  const { bidAmount } = req.body; // Retrieve the bid amount from the request body
 
   try {
-    const auction = await Auction.findById(id); // Cherche l'enchère par ID
+    // Check if the auction exists
+    const auction = await Auction.findById(id);
     if (!auction) {
       return res.status(404).json({ message: "Auction not found" });
     }
 
-    // Utiliser l'ID utilisateur récupéré depuis le token JWT
-    const userId = req.user.userId;
+    const userId = req.user.userId; // Get the user ID from the request
 
-    // Vérifier si l'enchère n'est pas déjà terminée
+    // Check if the auction is still active
     if (new Date() > new Date(auction.endTime)) {
       return res.status(400).json({ message: "Auction has ended" });
     }
 
-    // Vérifier si le montant de l'enchère est supérieur au montant actuel
+    // Validate the bid amount
     if (bidAmount <= auction.currentBid) {
       return res.status(400).json({
         message: `Bid must be greater than the current bid of ${auction.currentBid}`,
       });
     }
 
-    // Placer la nouvelle enchère
+    // Create a new bid object
     const newBid = {
-      userId, // Utilise l'utilisateur connecté
+      userId,
       amount: bidAmount,
     };
 
-    auction.bids.push(newBid); // Ajoute l'enchère à la liste
-    auction.currentBid = bidAmount; // Met à jour l'enchère actuelle
-    await auction.save(); // Sauvegarde les modifications
+    auction.bids.push(newBid); // Add the new bid to the auction's bid history
+    auction.currentBid = bidAmount; // Update the current bid amount
+    await auction.save(); // Save the changes to the database
 
+    // Emit updated auction details to all connected clients
+    io.emit("bidUpdate", auction); // Emit the updated auction object, not just the new bid
+
+    // Return a success response with the updated auction details
     res.status(200).json({ message: "Bid placed successfully", auction });
   } catch (error) {
     console.error(error);

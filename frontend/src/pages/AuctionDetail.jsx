@@ -1,6 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from "react"; // Add useCallback
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import io from "socket.io-client";
 import { UserContext } from "../context/UserContext";
+
+const socket = io("http://localhost:5000");
 
 const AuctionDetail = () => {
   const { id } = useParams();
@@ -14,7 +17,7 @@ const AuctionDetail = () => {
   // Function to fetch auction details from the API
   const fetchAuctionDetails = useCallback(async () => {
     try {
-      setLoading(true); // Start loading state
+      setLoading(true);
       const response = await fetch(`http://localhost:5000/api/auctions/${id}`);
       const data = await response.json();
       if (response.ok) {
@@ -25,39 +28,49 @@ const AuctionDetail = () => {
       }
       setLoading(false);
     } catch (error) {
-      setError("Failed to fetch auction details"); // Handle fetch errors
+      setError("Failed to fetch auction details");
       setLoading(false);
     }
-  }, [id]); // Include id as a dependency
+  }, [id]);
 
   useEffect(() => {
     fetchAuctionDetails();
-  }, [fetchAuctionDetails]); // Include fetchAuctionDetails in the dependency array
+  }, [fetchAuctionDetails]);
+
+  useEffect(() => {
+    // Listen for bid updates from the server
+    socket.on("bidUpdate", (updatedAuction) => {
+      setAuction(updatedAuction); // Update auction state with the latest auction data
+    });
+    // Clean up the socket connection on component unmount
+    return () => {
+      socket.off("bidUpdate");
+    };
+  }, []); // No dependencies, only runs once on mount
 
   // Function to handle bid submission
   const handleBidSubmit = async (e) => {
     e.preventDefault();
     if (bidAmount === "" || isNaN(bidAmount)) {
-      setError("Please enter a valid bid amount"); // Validate bid amount input
+      setError("Please enter a valid bid amount");
       return;
     }
 
     if (!user) {
-      setError("You must be logged in to place a bid"); // Check if user is logged in
+      setError("You must be logged in to place a bid");
       return;
     }
 
     try {
-      // Send bid request to the API
       const response = await fetch(
         `http://localhost:5000/api/auctions/${id}/bid`,
         {
-          method: "POST", // Set request method to POST
+          method: "POST",
           headers: {
-            "Content-Type": "application/json", // Specify JSON content type
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
           },
-          body: JSON.stringify({ bidAmount: Number(bidAmount) }), // Send bid amount in request body
+          body: JSON.stringify({ bidAmount: Number(bidAmount) }),
         }
       );
 
@@ -67,7 +80,6 @@ const AuctionDetail = () => {
         setSuccess("Bid placed successfully");
         setError(null);
         setBidAmount("");
-        fetchAuctionDetails(); // Fetch updated auction details after placing a bid
       } else {
         setError(data.message || "Failed to place bid");
         setSuccess(null);

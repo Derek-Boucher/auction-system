@@ -1,12 +1,24 @@
-import express from 'express';
-import { getAuctions, createAuction, getAuctionById, bidOnAuction } from '../controllers/AuctionController.js';
-import { verifyToken } from '../middleware/authMiddleware.js'; 
+import express from "express";
+import {
+  bidOnAuction,
+  createAuction,
+  getAuctionById,
+  getAuctions,
+} from "../controllers/AuctionController.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get('/', getAuctions);
-router.post('/newAuction', createAuction);
-router.get('/:id', getAuctionById);
-router.post('/:id/bid', verifyToken, bidOnAuction);
+// Function to initialize routes with io
+const auctionRoutes = (io) => {
+  router.get("/", getAuctions);
+  router.post("/newAuction", createAuction);
+  router.get("/:id", getAuctionById);
+  router.post("/:id/bid", verifyToken, (req, res) =>
+    bidOnAuction(req, res, io)
+  ); // Pass io to the controller
 
-export default router;
+  return router;
+};
+
+export default auctionRoutes;
