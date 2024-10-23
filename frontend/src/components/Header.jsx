@@ -10,10 +10,16 @@ const Header = () => {
       <nav>
         <ul style={styles.nav}>
           <li>
-            <a href="/">Home</a>
+            <a href="/" style={styles.link}>
+              Home
+            </a>{" "}
+            {/* Apply link styles */}
           </li>
           <li>
-            <a href="/auctions">Auctions</a>
+            <a href="/auctions" style={styles.link}>
+              Auctions
+            </a>{" "}
+            {/* Apply link styles */}
           </li>
           {user ? (
             <>
@@ -28,7 +34,10 @@ const Header = () => {
             </>
           ) : (
             <li>
-              <a href="/login">Login</a>
+              <a href="/login" style={styles.link}>
+                Login
+              </a>{" "}
+              {/* Apply link styles */}
             </li>
           )}
         </ul>
@@ -39,31 +48,46 @@ const Header = () => {
 
 const styles = {
   header: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#222831",
     padding: "1rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    color: "#fff",
+    color: "#f2f2f2",
   },
   logo: {
     fontSize: "1.5rem",
     fontWeight: "bold",
+    color: "#f96d00",
   },
   nav: {
     listStyle: "none",
     display: "flex",
-    gap: "1rem",
+    gap: "2rem",
+    alignItems: "center",
+    marginRight: "1rem",
   },
   welcomeMessage: {
     marginRight: "1rem",
+    display: "flex",
+    alignItems: "center",
   },
   logoutButton: {
-    background: "none",
+    backgroundColor: "#f96d00",
     border: "none",
-    color: "#fff",
+    color: "#f2f2f2",
     cursor: "pointer",
-    textDecoration: "underline",
+    textDecoration: "none",
+    fontSize: "1rem",
+    padding: "0.5rem 1rem",
+    display: "flex",
+    alignItems: "center",
+    height: "100%",
+  },
+  link: {
+    color: "#f2f2f2",
+    textDecoration: "none",
+    cursor: "pointer",
   },
 };
 
