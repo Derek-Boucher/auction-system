@@ -83,6 +83,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     height: "100%",
+    width: "100%",
   },
   link: {
     color: "#f2f2f2",

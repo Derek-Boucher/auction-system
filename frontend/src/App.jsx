@@ -5,6 +5,7 @@ import { UserProvider } from "./context/UserContext.js";
 import AuctionDetail from "./pages/AuctionDetail";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
+import Register from "./pages/register.jsx";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
             <Route path="/*" element={<HomePage />} />
             <Route path="/auction/:id" element={<AuctionDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Router>
       </SocketProvider>
