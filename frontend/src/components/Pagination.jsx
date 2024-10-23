@@ -1,27 +1,28 @@
-import React from 'react';
+import React from "react";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const styles = {
     pagination: {
-      display: 'flex',
-      justifyContent: 'center',
-      margin: '20px 0',
+      display: "flex",
+      justifyContent: "center",
+      margin: "20px 0",
     },
     button: {
-      backgroundColor: '#333',
-      color: '#ecf0f1',
-      border: 'none',
-      borderRadius: '5px',
-      padding: '10px 15px',
-      margin: '0 5px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s',
+      backgroundColor: "#f96d00",
+      color: "#ecf0f1",
+      border: "none",
+      borderRadius: "8px",
+      padding: "10px 15px",
+      margin: "0 5px",
+      cursor: "pointer",
+      transition: "background-color 0.3s",
+      maxWidth: "40px",
     },
     activeButton: {
-      backgroundColor: '#3498db',
-      color: '#fff',
+      backgroundColor: "#be5300",
+      color: "#fff",
     },
   };
 
@@ -31,9 +32,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          style={{ 
-            ...styles.button, 
-            ...(page === currentPage ? styles.activeButton : {}) // Applique les styles actifs si la page est actuelle
+          style={{
+            ...styles.button,
+            ...(page === currentPage ? styles.activeButton : {}), // Applique les styles actifs si la page est actuelle
           }}
         >
           {page}
