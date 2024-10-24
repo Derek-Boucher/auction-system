@@ -161,6 +161,7 @@ const styles = {
     boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
     maxWidth: "800px",
     margin: "40px auto",
+    minHeight: "76vh",
   },
   title: {
     textAlign: "center",
