@@ -1,6 +1,7 @@
 .auction-list-container {
   padding: 20px;
   max-width: 1200px;
+  min-height: 800px;
   margin: 0 auto;
   background-color: #222831;
   color: #ecf0f1;
@@ -42,4 +43,28 @@
   text-align: center;
   margin: 20px 0;
   font-size: 1.2rem;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  width: 300px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #393e46;
+  color: #ecf0f1;
+}
+
+.search-container input::placeholder {
+  color: #ecf0f1;
+}
+
+.search-container input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(249, 109, 0, 0.7);
 }

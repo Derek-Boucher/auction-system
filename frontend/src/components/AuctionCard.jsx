@@ -13,6 +13,7 @@ const AuctionCard = ({ auction }) => {
         />
         <div className="auction-details">
           <h3>{auction.title}</h3>
+          <p>Description: {auction.description}</p>
           <p>Current Bid: ${auction.currentBid}</p>
           <p>End Time: {new Date(auction.endTime).toLocaleString()}</p>
         </div>
