@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Auction from "../models/Auction.js";
 
 // Controller to get all auctions with optional search, sorting, and pagination
@@ -106,6 +107,44 @@ export const bidOnAuction = async (req, res, io) => {
 
     // Return a success response with the updated auction details
     res.status(200).json({ message: "Bid placed successfully", auction });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getAuctionsByUser = async (req, res) => {
+  const { id } = req.params; // Retrieve the user ID from route parameters
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+
+  try {
+    // Ensure userId is a valid ObjectId format
+    console.log(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    // Convert userId to ObjectId for MongoDB query
+    const userObjectId = new mongoose.Types.ObjectId(id);
+
+    // Fetch auctions created by the specific user
+    const auctions = await Auction.find({ createdBy: userObjectId })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalCount = await Auction.countDocuments({
+      createdBy: userObjectId,
+    });
+    const totalPages = Math.ceil(totalCount / limit); // Calculate total pages
+
+    if (auctions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No auctions found for this user" });
+    }
+
+    res.json({ auctions, totalPages });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

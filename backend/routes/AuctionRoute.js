@@ -4,6 +4,7 @@ import {
   createAuction,
   getAuctionById,
   getAuctions,
+  getAuctionsByUser,
 } from "../controllers/AuctionController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
@@ -14,6 +15,7 @@ const auctionRoutes = (io) => {
   router.get("/", getAuctions);
   router.post("/newAuction", createAuction);
   router.get("/:id", getAuctionById);
+  router.get("/users/:id", getAuctionsByUser);
   router.post("/:id/bid", verifyToken, (req, res) =>
     bidOnAuction(req, res, io)
   ); // Pass io to the controller
