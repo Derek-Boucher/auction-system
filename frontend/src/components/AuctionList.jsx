@@ -16,6 +16,7 @@ const AuctionList = () => {
       const response = await fetch(`http://localhost:5000/api/auctions`);
       const data = await response.json();
       if (data && Array.isArray(data.auctions)) {
+        console.log("Auctions fetched successfully:", data.auctions);
         setAuctions(data.auctions);
       } else {
         setAuctions([]);

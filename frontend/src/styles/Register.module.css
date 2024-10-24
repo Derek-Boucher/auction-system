@@ -12,7 +12,7 @@
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   color: #f2f2f2;
-  width: 400px;
+  width: 450px;
 }
 
 h2 {
@@ -23,6 +23,7 @@ h2 {
 
 .input-group {
   margin-bottom: 1.5rem;
+  min-width: 100%;
 }
 
 .input-group label {
@@ -38,6 +39,7 @@ h2 {
   border-radius: 4px;
   background-color: #393e46;
   color: #ecf0f1;
+  box-sizing: none;
 }
 
 .input-group input:focus {
@@ -48,6 +50,7 @@ h2 {
 .button-group {
   display: flex;
   justify-content: center;
+  max-width: 94%;
 }
 
 .submit-btn {

@@ -1,21 +1,79 @@
 import React, { useState } from "react";
+import { Button } from "react-bootstrap"; // Utilisation des boutons Bootstrap
+import CreateAuctionModal from "./CreateAuctionModal";
 
 const ActionBanner = () => {
   const [hoveredCA, setHoveredCA] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleConfirmAuction = async (auctionData) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token) {
+      alert("You must be logged in to create an auction.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/auctions/newAuction",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...auctionData,
+            createdBy: user.id,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create auction");
+      }
+
+      const data = await response.json();
+      console.log("Auction created successfully:", data);
+
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error creating auction:", error);
+    }
+  };
 
   return (
     <div style={styles.banner}>
       <h1 style={styles.heading}>Find the Best Deals</h1>
       <p style={styles.text}>Join an auction now or create your own!</p>
       <div style={styles.buttonContainer}>
-        <button
+        <Button
+          variant="primary"
           style={{ ...styles.button, ...(hoveredCA ? styles.buttonHover : {}) }}
           onMouseEnter={() => setHoveredCA(true)}
           onMouseLeave={() => setHoveredCA(false)}
+          onClick={handleOpenModal}
         >
           Create Auction
-        </button>
+        </Button>
       </div>
+
+      <CreateAuctionModal
+        show={showModal}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmAuction}
+        backdrop="static"
+        keyboard={false}
+        centered
+      />
     </div>
   );
 };
