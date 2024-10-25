@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/AuctionList.css"; // Assurez-vous que ce fichier est correctement lié
+import "../styles/AuctionList.css";
 import AuctionCard from "./AuctionCard";
 import Pagination from "./Pagination";
 
@@ -9,10 +9,11 @@ const AuctionList = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState(""); // Barre de recherche
 
   const fetchAuctions = async () => {
     try {
-      setLoading(true); // Start loading state
+      setLoading(true);
       const response = await fetch(`http://localhost:5000/api/auctions`);
       const data = await response.json();
       if (data && Array.isArray(data.auctions)) {
@@ -33,7 +34,15 @@ const AuctionList = () => {
 
   const indexOfLastAuction = currentPage * itemsPerPage;
   const indexOfFirstAuction = indexOfLastAuction - itemsPerPage;
-  const currentAuctions = auctions.slice(
+
+  // Filtrer les enchères en fonction du terme de recherche
+  const filteredAuctions = auctions.filter(
+    (auction) =>
+      auction.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      auction.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentAuctions = filteredAuctions.slice(
     indexOfFirstAuction,
     indexOfLastAuction
   );
@@ -41,11 +50,22 @@ const AuctionList = () => {
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
 
-  const totalPages = Math.ceil(auctions.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredAuctions.length / itemsPerPage);
 
   return (
     <div className="auction-list-container">
       <h1 className="title">Auction List</h1>
+
+      {/* Barre de recherche */}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search by title or description"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <div className="items-per-page">
         <label htmlFor="items-per-page">Items per page:</label>
         <select

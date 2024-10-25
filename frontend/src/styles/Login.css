@@ -3,7 +3,9 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  min-width: 100%;
   background-color: #393e46;
+  margin: 0;
 }
 
 .login-container {
@@ -70,12 +72,13 @@ button:hover {
 
 .button-container {
   display: flex;
-  justify-content: space-between; /* Équilibre l'espace entre les boutons */
-  margin-top: 20px; /* Ajoute un espacement au-dessus des boutons */
+  justify-content: space-between;
+  margin-top: 20px;
+  max-width: 95%;
 }
 
 button {
-  width: 48%; /* Donne un peu d'espace entre les boutons */
+  width: 48%;
   padding: 10px;
   background-color: #f96d00;
   border: none;
@@ -86,5 +89,5 @@ button {
 }
 
 button:hover {
-  background-color: #e86a00; /* Slightly darker on hover */
+  background-color: #e86a00;
 }

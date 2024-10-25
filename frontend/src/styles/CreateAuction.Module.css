@@ -1,0 +1,46 @@
+.modal-content {
+  background-color: #222831; /* Couleur de fond du modal */
+  color: #ecf0f1; /* Couleur du texte */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre */
+}
+
+.modal-header .modal-title {
+  color: #f96d00; /* Couleur du titre du modal */
+}
+
+.form-label {
+  color: #ecf0f1; /* Couleur des labels */
+}
+
+.form-control {
+  background-color: #393e46; /* Couleur de fond des champs */
+  color: #ecf0f1; /* Couleur du texte des champs */
+  border: none; /* Pas de bordure */
+  margin-bottom: 12px;
+}
+
+.form-control:focus {
+  outline: none; /* Pas de contour */
+  box-shadow: 0 0 5px rgba(249, 109, 0, 0.7);
+  background-color: #393e46; /* Couleur de fond des champs */
+  color: #ecf0f1; /* Couleur du texte des champs */
+}
+
+.btn-secondary {
+  background-color: #f96d00; /* Couleur du bouton Cancel */
+  border: none; /* Pas de bordure */
+}
+
+.btn-secondary:hover {
+  background-color: #e86a00; /* Couleur au survol du bouton Cancel */
+}
+
+.btn-primary {
+  background-color: #f96d00; /* Couleur du bouton Submit */
+  border: none; /* Pas de bordure */
+}
+
+.btn-primary:hover {
+  background-color: #e86a00; /* Couleur au survol du bouton Submit */
+}

@@ -63,6 +63,20 @@ const AuctionDetail = () => {
       return;
     }
 
+    if (bidAmount <= auction.startingBid) {
+      setError(
+        `Bid must be greater than the starting bid of $${auction.startingBid}`
+      );
+      return;
+    }
+
+    if (bidAmount <= auction.currentBid) {
+      setError(
+        `Bid must be greater than the current bid of $${auction.currentBid}`
+      );
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5000/api/auctions/${id}/bid`,
@@ -93,7 +107,6 @@ const AuctionDetail = () => {
   };
 
   if (loading) return <div style={styles.loading}>Loading...</div>;
-  if (error) return <div style={styles.error}>{error}</div>;
 
   return (
     <div style={styles.background}>
@@ -126,18 +139,24 @@ const AuctionDetail = () => {
               type="number"
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value)}
-              min={auction ? auction.currentBid + 1 : 1}
+              // Set min to the higher value between startingBid and currentBid
+              min={
+                auction
+                  ? Math.max(auction.currentBid, auction.startingBid) + 1
+                  : 1
+              }
               style={styles.input}
               required
             />
           </label>
+          {error && <div style={styles.error}>{error}</div>}
+
           <button type="submit" style={styles.button}>
             Place Bid
           </button>
         </form>
 
         {success && <div style={styles.success}>{success}</div>}
-        {error && <div style={styles.error}>{error}</div>}
 
         <Link to="/auctions" style={styles.backLink}>
           Back to Auction List
@@ -161,6 +180,7 @@ const styles = {
     boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
     maxWidth: "800px",
     margin: "40px auto",
+    minHeight: "76vh",
   },
   title: {
     textAlign: "center",
