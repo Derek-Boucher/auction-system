@@ -78,6 +78,15 @@ export const bidOnAuction = async (req, res, io) => {
       return res.status(404).json({ message: "Auction not found" });
     }
 
+    console.log("Bid Amount:", bidAmount);
+    console.log("Starting Bid:", auction.startingBid);
+
+    if (bidAmount < auction.startingBid) {
+      return res
+        .status(400)
+        .json({ message: "Bid must be greater than the starting bid" });
+    }
+
     const userId = req.user.userId; // Get the user ID from the request
 
     // Check if the auction is still active
