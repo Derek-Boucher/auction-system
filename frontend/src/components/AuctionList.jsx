@@ -4,7 +4,9 @@ import AuctionCard from "./AuctionCard";
 import Pagination from "./Pagination";
 
 const AuctionList = () => {
-  const [auctions, setAuctions] = useState([]);
+  const [allAuctions, setAllAuctions] = useState([]); // Stocke toutes les enchères
+  const [filteredAuctions, setFilteredAuctions] = useState([]); // Enchères filtrées selon la recherche
+  const [totalAuctions, setTotalAuctions] = useState(0); // Nombre total d'enchères
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,10 +18,17 @@ const AuctionList = () => {
       setLoading(true);
       const response = await fetch(`http://localhost:5000/api/auctions`);
       const data = await response.json();
+
       if (data && Array.isArray(data.auctions)) {
-        setAuctions(data.auctions);
+        setAllAuctions(data.auctions); // Enchères complètes pour la recherche
+        setTotalAuctions(data.totalAuctions); // Total des enchères pour la pagination
+        setFilteredAuctions(data.auctions); // Initialiser les enchères filtrées
+        setFilteredAuctions(data.auctions.slice(0, itemsPerPage)); // Initialiser les enchères visibles
       } else {
-        setAuctions([]);
+        setAllAuctions([]);
+        setTotalAuctions(0);
+        setFilteredAuctions([]); // Initialiser à un tableau vide si aucune enchère
+        setFilteredAuctions([]);
       }
       setLoading(false);
     } catch (error) {
@@ -32,25 +41,34 @@ const AuctionList = () => {
     fetchAuctions();
   }, []);
 
-  const indexOfLastAuction = currentPage * itemsPerPage;
-  const indexOfFirstAuction = indexOfLastAuction - itemsPerPage;
+  useEffect(() => {
+    const filtered = allAuctions.filter((auction) => {
+      const titleMatches =
+        auction.title &&
+        auction.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const descriptionMatches =
+        auction.description &&
+        auction.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return titleMatches || descriptionMatches;
+    });
 
-  // Filtrer les enchères en fonction du terme de recherche
-  const filteredAuctions = auctions.filter(
-    (auction) =>
-      auction.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      auction.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    setFilteredAuctions(filtered); // Mettre à jour l'état des enchères filtrées
 
-  const currentAuctions = filteredAuctions.slice(
-    indexOfFirstAuction,
-    indexOfLastAuction
-  );
+    // Mise à jour des enchères visibles en fonction de la pagination
+    const indexOfLastAuction = currentPage * itemsPerPage;
+    const indexOfFirstAuction = indexOfLastAuction - itemsPerPage;
+
+    // Mettez à jour les enchères affichées
+    setFilteredAuctions(
+      filtered.slice(indexOfFirstAuction, indexOfLastAuction)
+    );
+
+    // Met à jour le total d'enchères après filtrage
+    setTotalAuctions(filtered.length);
+  }, [searchTerm, allAuctions, currentPage, itemsPerPage]);
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
-
-  const totalPages = Math.ceil(filteredAuctions.length / itemsPerPage);
 
   return (
     <div className="auction-list-container">
@@ -66,6 +84,7 @@ const AuctionList = () => {
         />
       </div>
 
+      {/* Sélection du nombre d'items par page */}
       <div className="items-per-page">
         <label htmlFor="items-per-page">Items per page:</label>
         <select
@@ -73,7 +92,7 @@ const AuctionList = () => {
           value={itemsPerPage}
           onChange={(e) => {
             setItemsPerPage(Number(e.target.value));
-            setCurrentPage(1);
+            setCurrentPage(1); // Réinitialiser à la première page
           }}
         >
           <option value={5}>5</option>
@@ -83,19 +102,21 @@ const AuctionList = () => {
         </select>
       </div>
 
-      {currentAuctions.length === 0 ? (
+      {/* Affichage des enchères */}
+      {filteredAuctions.length === 0 ? (
         <div className="no-auctions">No auctions found</div>
       ) : (
         <div className="auction-grid">
-          {currentAuctions.map((auction) => (
+          {filteredAuctions.map((auction) => (
             <AuctionCard key={auction._id} auction={auction} />
           ))}
         </div>
       )}
 
+      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
+        totalPages={Math.ceil(totalAuctions / itemsPerPage)}
         onPageChange={setCurrentPage}
       />
     </div>
