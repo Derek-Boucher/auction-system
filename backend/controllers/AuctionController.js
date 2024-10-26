@@ -7,14 +7,16 @@ export const getAuctions = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Default to 1 if not specified
 
   try {
+    // Fetch auctions for the specified page and limit
     const auctions = await Auction.find()
       .skip((page - 1) * limit)
       .limit(limit);
 
+    // Count the total number of auctions
     const totalCount = await Auction.countDocuments();
-    const totalPages = Math.ceil(totalCount / limit);
 
-    res.json({ auctions, totalPages }); // Return auctions and total pages
+    // Respond with auctions and the total count (totalAuctions)
+    res.json({ auctions, totalAuctions: totalCount });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
