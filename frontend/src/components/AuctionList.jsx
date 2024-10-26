@@ -63,7 +63,6 @@ const AuctionList = () => {
       filtered.slice(indexOfFirstAuction, indexOfLastAuction)
     );
 
-    // Met à jour le total d'enchères après filtrage
     setTotalAuctions(filtered.length);
   }, [searchTerm, allAuctions, currentPage, itemsPerPage]);
 
