@@ -15,6 +15,7 @@ const AuctionDetail = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [viewersCount, setViewersCount] = useState(0);
 
   // Function to fetch auction details from the API
   const fetchAuctionDetails = useCallback(async () => {
@@ -49,6 +50,19 @@ const AuctionDetail = () => {
       socket.off("bidUpdate");
     };
   }, []); // No dependencies, only runs once on mount
+
+  useEffect(() => {
+    socket.emit("joinAuction", id); // Join the auction on component mount
+
+    socket.on("viewersCountUpdate", (count) => {
+      setViewersCount(count); // Update viewers count in real-time
+    });
+
+    return () => {
+      socket.emit("leaveAuction", id); // Leave the auction on component unmount
+      socket.off("viewersCountUpdate");
+    };
+  }, [id]);
 
   // Function to handle bid submission
   const handleBidSubmit = async (e) => {
@@ -114,6 +128,8 @@ const AuctionDetail = () => {
 
       <div style={styles.container}>
         <h1 style={styles.title}>Auction Detail</h1>
+        <p style={styles.viewersCount}>Viewers: {viewersCount}</p>{" "}
+        {/* Display viewers count */}
         {auction && (
           <div style={styles.auctionDetail}>
             <img
@@ -130,7 +146,6 @@ const AuctionDetail = () => {
             </div>
           </div>
         )}
-
         {/* Form to place a bid */}
         <form onSubmit={handleBidSubmit} style={styles.form}>
           <label style={styles.label}>
@@ -155,9 +170,7 @@ const AuctionDetail = () => {
             Place Bid
           </button>
         </form>
-
         {success && <div style={styles.success}>{success}</div>}
-
         <Link to="/auctions" style={styles.backLink}>
           Back to Auction List
         </Link>
@@ -186,6 +199,12 @@ const styles = {
     textAlign: "center",
     marginBottom: "20px",
     color: "#f96d00",
+  },
+  viewersCount: {
+    textAlign: "center",
+    color: "#f96d00",
+    marginBottom: "20px",
+    fontSize: "1.2em",
   },
   auctionDetail: {
     display: "flex",

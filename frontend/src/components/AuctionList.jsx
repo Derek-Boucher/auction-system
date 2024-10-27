@@ -49,23 +49,21 @@ const AuctionList = () => {
       const descriptionMatches =
         auction.description &&
         auction.description.toLowerCase().includes(searchTerm.toLowerCase());
-      return titleMatches || descriptionMatches;
+
+      return (titleMatches || descriptionMatches) && !auction.isEnded;
     });
 
-    setFilteredAuctions(filtered); // Mettre à jour l'état des enchères filtrées
+    setFilteredAuctions(filtered);
 
-    // Mise à jour des enchères visibles en fonction de la pagination
+    // Pagination
     const indexOfLastAuction = currentPage * itemsPerPage;
     const indexOfFirstAuction = indexOfLastAuction - itemsPerPage;
 
-    // Mettez à jour les enchères affichées
     setFilteredAuctions(
       filtered.slice(indexOfFirstAuction, indexOfLastAuction)
     );
-
     setTotalAuctions(filtered.length);
   }, [searchTerm, allAuctions, currentPage, itemsPerPage]);
-
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
 

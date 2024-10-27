@@ -10,13 +10,23 @@ export const getAuctions = async (req, res) => {
     // Fetch auctions for the specified page and limit
     const auctions = await Auction.find()
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .lean(); // Use lean to improve performance since we're only reading data
+
+    // Get current time to check if the auction has ended
+    const currentTime = Date.now();
+
+    // Add isEnded field to each auction based on endTime
+    const auctionsWithStatus = auctions.map((auction) => ({
+      ...auction,
+      isEnded: new Date(auction.endTime) < currentTime, // true if endTime has passed
+    }));
 
     // Count the total number of auctions
     const totalCount = await Auction.countDocuments();
 
     // Respond with auctions and the total count (totalAuctions)
-    res.json({ auctions, totalAuctions: totalCount });
+    res.json({ auctions: auctionsWithStatus, totalAuctions: totalCount });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
