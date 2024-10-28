@@ -54,6 +54,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     color: "#f2f2f2",
+    marginBottom: "4rem",
   },
   logo: {
     fontSize: "1.5rem",
