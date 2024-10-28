@@ -171,3 +171,25 @@ export const getAuctionsByUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getWonAuctions = async (req, res) => {
+  const userId = req.params.userId;
+
+  console.log(`Fetching won auctions for userId: ${userId}`);
+
+  try {
+    const wonAuctions = await Auction.aggregate([
+      { $match: { endTime: { $lt: new Date() } } },
+      { $addFields: { lastBid: { $arrayElemAt: ["$bids", -1] } } },
+    ]);
+
+    // Ajoutez ce log pour voir les enchères récupérées
+    console.log(`Auctions Retrieved: ${JSON.stringify(wonAuctions)}`);
+
+    console.log(`Won Auctions Found: ${JSON.stringify(wonAuctions)}`);
+    res.json({ auctions: wonAuctions });
+  } catch (error) {
+    console.error("Error fetching auctions: ", error);
+    res.status(500).json({ message: "Failed to retrieve won auctions" });
+  }
+};

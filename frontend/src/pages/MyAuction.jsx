@@ -3,6 +3,7 @@ import AuctionCard from "../components/AuctionCard"; // Importez le composant Au
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Pagination from "../components/Pagination"; // Importez le composant Pagination
+import WonAuctionsList from "../components/WonAuctionsList";
 import { UserContext } from "../context/UserContext"; // Importez le UserContext
 
 const MyAuctions = () => {
@@ -64,55 +65,59 @@ const MyAuctions = () => {
   const totalPages = Math.ceil(filteredAuctions.length / itemsPerPage);
 
   return (
-    <div style={styles.myAuction}>
-      <Header />
-      <div style={styles.container}>
-        <h1 style={styles.title}>My Auctions</h1>
+    <div>
+      <div style={styles.myAuction}>
+        <Header />
+        <WonAuctionsList />
+        <div style={styles.container}>
+          <h1 style={styles.title}>My Auctions</h1>
 
-        {/* Barre de recherche */}
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by title or description"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+          {/* Barre de recherche */}
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search by title or description"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="items-per-page">
+            <label htmlFor="items-per-page">Items per page:</label>
+            <select
+              id="items-per-page"
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+
+          {currentAuctions.length > 0 ? (
+            <div className="auction-list" style={styles.auctionGrid}>
+              {currentAuctions.map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+            </div>
+          ) : (
+            <p>No auctions found.</p>
+          )}
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
           />
         </div>
 
-        <div className="items-per-page">
-          <label htmlFor="items-per-page">Items per page:</label>
-          <select
-            id="items-per-page"
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-        </div>
-
-        {currentAuctions.length > 0 ? (
-          <div className="auction-list" style={styles.auctionGrid}>
-            {currentAuctions.map((auction) => (
-              <AuctionCard key={auction._id} auction={auction} />
-            ))}
-          </div>
-        ) : (
-          <p>No auctions found.</p>
-        )}
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };
