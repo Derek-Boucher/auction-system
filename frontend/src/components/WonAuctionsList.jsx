@@ -1,4 +1,3 @@
-// WonAuctionsList.jsx
 import React, { useEffect, useState } from "react";
 import AuctionCard from "./AuctionCard";
 
@@ -34,7 +33,7 @@ const WonAuctionsList = ({ userId }) => {
   if (wonAuctions.length === 0) return <div>No won auctions found</div>;
 
   return (
-    <div style={styles.wonAuctionsList}>
+    <div id="won-auctions" style={styles.wonAuctionsList}>
       <h2 style={styles.title}>My Won Auctions</h2>
       <div style={styles.auctionGrid}>
         {wonAuctions.map((auction) => (
@@ -59,6 +58,7 @@ const styles = {
   title: {
     textAlign: "center",
     marginBottom: "20px",
+    color: "#ecf0f1",
   },
   auctionGrid: {
     display: "grid",
