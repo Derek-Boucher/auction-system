@@ -47,6 +47,7 @@ const WonAuctionsList = ({ userId }) => {
 // Inline styles object
 const styles = {
   wonAuctionsList: {
+    paddingTop: "20px",
     padding: "20px",
     maxWidth: "1200px",
     minHeight: "800px",

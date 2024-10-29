@@ -52,8 +52,8 @@ const FinishedAuctionsList = () => {
 // Inline styles object, same as in WonAuctionsList
 const styles = {
   finishedAuctionsList: {
-    marginTop: "6rem",
-    padding: "20px",
+    marginTop: "70px",
+    padding: "30px",
     maxWidth: "1200px",
     minHeight: "800px",
     margin: "0 auto",

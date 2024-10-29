@@ -17,7 +17,7 @@ const AuctionDetail = () => {
   const [loading, setLoading] = useState(false);
   const [viewersCount, setViewersCount] = useState(0);
 
-  // Function to fetch auction details from the API
+  // Fetch auction details
   const fetchAuctionDetails = useCallback(async () => {
     try {
       setLoading(true);
@@ -36,35 +36,32 @@ const AuctionDetail = () => {
     }
   }, [id]);
 
+  // Initial fetch of auction details
   useEffect(() => {
     fetchAuctionDetails();
   }, [fetchAuctionDetails]);
 
+  // Socket listeners for bids and viewers count
   useEffect(() => {
-    // Listen for bid updates from the server
     socket.on("bidUpdate", (updatedAuction) => {
-      setAuction(updatedAuction); // Update auction state with the latest auction data
+      setAuction(updatedAuction);
     });
-    // Clean up the socket connection on component unmount
-    return () => {
-      socket.off("bidUpdate");
-    };
-  }, []); // No dependencies, only runs once on mount
 
-  useEffect(() => {
-    socket.emit("joinAuction", id); // Join the auction on component mount
+    socket.emit("joinAuction", id); // Join the auction room
 
     socket.on("viewersCountUpdate", (count) => {
-      setViewersCount(count); // Update viewers count in real-time
+      setViewersCount(count); // Update viewer count for this specific auction
     });
 
+    // Cleanup function
     return () => {
-      socket.emit("leaveAuction", id); // Leave the auction on component unmount
+      socket.emit("leaveAuction", id); // Leave the auction room on unmount
+      socket.off("bidUpdate");
       socket.off("viewersCountUpdate");
     };
   }, [id]);
 
-  // Function to handle bid submission
+  // Handle bid submission
   const handleBidSubmit = async (e) => {
     e.preventDefault();
     if (bidAmount === "" || isNaN(bidAmount)) {
@@ -120,6 +117,14 @@ const AuctionDetail = () => {
     }
   };
 
+  // Check if auction has ended
+  const isAuctionEnded = auction && new Date() > new Date(auction.endTime);
+  const isUserWinner =
+    auction &&
+    user &&
+    auction.bids.length > 0 &&
+    auction.bids[auction.bids.length - 1].userId === user.id;
+
   if (loading) return <div style={styles.loading}>Loading...</div>;
 
   return (
@@ -128,8 +133,7 @@ const AuctionDetail = () => {
 
       <div style={styles.container}>
         <h1 style={styles.title}>Auction Detail</h1>
-        <p style={styles.viewersCount}>Viewers: {viewersCount}</p>{" "}
-        {/* Display viewers count */}
+        <p style={styles.viewersCount}>Viewers: {viewersCount}</p>
         {auction && (
           <div style={styles.auctionDetail}>
             <img
@@ -146,30 +150,39 @@ const AuctionDetail = () => {
             </div>
           </div>
         )}
-        {/* Form to place a bid */}
-        <form onSubmit={handleBidSubmit} style={styles.form}>
-          <label style={styles.label}>
-            Your Bid:
-            <input
-              type="number"
-              value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
-              // Set min to the higher value between startingBid and currentBid
-              min={
-                auction
-                  ? Math.max(auction.currentBid, auction.startingBid) + 1
-                  : 1
-              }
-              style={styles.input}
-              required
-            />
-          </label>
-          {error && <div style={styles.error}>{error}</div>}
 
-          <button type="submit" style={styles.button}>
-            Place Bid
-          </button>
-        </form>
+        {/* Conditional rendering for buttons */}
+        {isAuctionEnded ? (
+          isUserWinner ? (
+            <Link to={`/payment/${id}`} style={styles.button}>
+              <button style={styles.button}>Proceed to Payment</button>
+            </Link>
+          ) : (
+            <p style={styles.message}>Auction has ended. You did not win.</p>
+          )
+        ) : (
+          <form onSubmit={handleBidSubmit} style={styles.form}>
+            <label style={styles.label}>
+              Your Bid:
+              <input
+                type="number"
+                value={bidAmount}
+                onChange={(e) => setBidAmount(e.target.value)}
+                min={
+                  auction
+                    ? Math.max(auction.currentBid, auction.startingBid) + 1
+                    : 1
+                }
+                style={styles.input}
+                required
+              />
+            </label>
+            {error && <div style={styles.error}>{error}</div>}
+            <button type="submit" style={styles.button}>
+              Place Bid
+            </button>
+          </form>
+        )}
         {success && <div style={styles.success}>{success}</div>}
         <Link to="/auctions" style={styles.backLink}>
           Back to Auction List
@@ -241,7 +254,6 @@ const styles = {
     marginLeft: "10px",
   },
   button: {
-    padding: "10px 20px",
     borderRadius: "5px",
     border: "none",
     backgroundColor: "#f96d00",
@@ -249,6 +261,9 @@ const styles = {
     cursor: "pointer",
     transition: "background-color 0.3s",
     marginTop: "10px",
+    textAlign: "center",
+    display: "block",
+    width: "100%",
   },
   success: {
     color: "green",
@@ -259,10 +274,6 @@ const styles = {
     color: "red",
     textAlign: "center",
     marginTop: "10px",
-  },
-  loading: {
-    textAlign: "center",
-    color: "#3498db",
   },
   backLink: {
     display: "block",
