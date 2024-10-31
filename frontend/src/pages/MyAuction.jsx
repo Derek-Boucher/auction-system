@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import AuctionCard from "../components/AuctionCard"; // Importez le composant AuctionCard
+import FinishedAuctionsList from "../components/FinishedAuctionsList.jsx";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Pagination from "../components/Pagination"; // Importez le composant Pagination
+import SecondNavBar from "../components/SecondNavBar";
 import WonAuctionsList from "../components/WonAuctionsList";
 import { UserContext } from "../context/UserContext"; // Importez le UserContext
 
@@ -68,8 +70,10 @@ const MyAuctions = () => {
     <div>
       <div style={styles.myAuction}>
         <Header />
+        <SecondNavBar />
         <WonAuctionsList />
-        <div style={styles.container}>
+        <FinishedAuctionsList />
+        <div id="my-auctions" style={styles.container}>
           <h1 style={styles.title}>My Auctions</h1>
 
           {/* Barre de recherche */}

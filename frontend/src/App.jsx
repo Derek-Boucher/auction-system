@@ -6,6 +6,7 @@ import AuctionDetail from "./pages/AuctionDetail";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import MyAuctions from "./pages/MyAuction.jsx";
+import Payment from "./pages/Payment.jsx";
 import Register from "./pages/Register.jsx";
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/myAuctions" element={<MyAuctions />} />
+            <Route path="/payment/:id" element={<Payment />} />
           </Routes>
         </Router>
       </SocketProvider>
